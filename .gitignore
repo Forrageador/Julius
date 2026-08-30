@@ -1,0 +1,12 @@
+# Credenciais locais
+.env
+
+# Sessão criada pelo Telethon
+sessao_filtro.session
+sessao_filtro.session-journal
+
+# Arquivos do Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
