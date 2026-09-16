@@ -25,6 +25,7 @@ try:
 except ValueError as erro:
     raise RuntimeError("API_ID deve ser um número.") from erro
 
+# Palavras-chave que você quer receber:
 ALVOS = [
     "notebook",
     "fone de ouvido",
@@ -32,11 +33,11 @@ ALVOS = [
     "bug",
 ]
 
+# Canais para serem monitorados (é preciso fazer parte do canal):
 CANAIS = [
-    "@gatunopromos",
-    "@pobres",
-    "@LaPromotion",
-    "@promonocontext",
+    "@canal1",
+    "@canal2",
+    "@canal3",
 ]
 
 
@@ -45,8 +46,16 @@ def normalizar(texto: str) -> str:
     texto = unicodedata.normalize("NFKD", texto)
     return "".join(c for c in texto if not unicodedata.combining(c))
 
+
+def compilar_palavra_chave(palavra: str) -> re.Pattern:
+    separadores = r"[\s\-‐‑]+"
+    partes = re.split(separadores, normalizar(palavra).strip())
+    expressao = r"[\s\-‐‑]*".join(re.escape(parte) for parte in partes)
+    return re.compile(r"\b" + expressao + r"\b")
+
+
 PADROES_ALVOS = [
-    (palavra, re.compile(r"\b" + re.escape(normalizar(palavra)) + r"\b"))
+    (palavra, compilar_palavra_chave(palavra))
     for palavra in ALVOS
 ]
 
@@ -91,13 +100,13 @@ async def handler(event):
         nome_canal = getattr(canal, "title", "canal desconhecido")
 
         await notificar_via_bot(
-            f"🔔 Promoção encontrada: '{palavra_encontrada}'\n"
+            f"🔔 Palavra encontrada: '{palavra_encontrada}'\n"
             f"📢 Canal: {nome_canal}\n\n"
             f"{texto}"
         )
         print(f"[BOA!] '{palavra_encontrada}' em {nome_canal}")
 
 
-print("Filtro de promoções rodando...")
+print("Julius está trabalhando...")
 with client:
     client.run_until_disconnected()
